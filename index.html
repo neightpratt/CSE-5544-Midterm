@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CSE 5544 Midterm Project</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+    </style>
+</head>
+
+<body>
+
+    <div style="display: flex; flex-direction: column; align-items: center">
+        <div style="width: 790px; height: 400px; border: black 5px solid; display: inline-block; margin: 5px">
+            <img width='790px' height='400px' src='baseballField.png' usemap='#fieldmap'/>
+            <map name="fieldmap">
+                <area id="LF" shape="circle" coords="200,110,30" onclick="printPosition('Left Field clicked!')">
+                <area id="CF" shape="circle" coords="395,60,30" onclick="printPosition('Center Field clicked!')">
+                <area id="RF" shape="circle" coords="590,115,30" onclick="printPosition('Right Field clicked!')">
+                <area id="3B" shape="circle" coords="270,205,30" onclick="printPosition('Third Base clicked!')">
+                <area id="SS" shape="circle" coords="335,165,30" onclick="printPosition('Short Stop clicked!')">
+                <area id="2B" shape="circle" coords="455,170,30" onclick="printPosition('Second Base clicked!')">
+                <area id="1B" shape="circle" coords="515,210,30" onclick="printPosition('First Base clicked!')">
+                <area id="P" shape="circle" coords="395,245,30" onclick="printPosition('Pitcher clicked!')">
+                <area id="C" shape="circle" coords="395,340,30" onclick="printPosition('Catcher clicked!')">
+            </map>
+        </div>
+        <div style="width: 790px; height: 400px; border: black 5px solid; display: inline-block; margin: 5px">
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function printPosition(pos) {
+            alert(pos);
+        }
+    </script>
+
+</body>
+
+</html>
