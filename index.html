@@ -58,7 +58,24 @@
                         <option value="2007">2007</option>
                     </select>
                 </div>
+				<div style="font-size: 20px; margin-top: 10px;">
+                    <div style="display: inline">Display # Bars</div>
+                    <select onchange="changeDisplayCount(this.value)" style="display: inline">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                        <option value="25">25</option>
+                        <option value="30">30</option>
+                        <option value="35">35</option>
+                        <option value="40">40</option>
+                        <option value="45">45</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
                 <svg id="barGraph" class="barGraphSVG" width="1000" height="400"></svg>
+                <svg id="barGraph2" class="barGraphSVG" width="1000" height="400"></svg>
+				
             </div>
         </div>
     </div>
@@ -82,7 +99,9 @@
         var peopleDataFiltered;
         // fieldingDataFiltered will contain players and their fielding data
         var fieldingDataFiltered;
-
+		// Number of bars in the graph to display
+		var displayCount = 10;
+		
         // end of variable declarations ---------------------------------------------
 
         // function definitions -----------------------------------------------------
@@ -101,6 +120,13 @@
             updateBarGraph();
         }
 
+		// changeYear function called when year drop down is changed
+        function changeDisplayCount(number) {
+            displayCount = number;
+            // update bar graph
+            updateBarGraph();
+        }
+		
         // changePosition function called when a position is clicked
         function changePosition(pos) {
             currentPosition = pos;
@@ -148,11 +174,14 @@
             // sort by stat
             battingCurrentYear.sort(function (a, b) { return b[currentStat] - a[currentStat]; });
             // get top ten players in the category
-            battingCurrentYear = battingCurrentYear.slice(0, 10);
+            battingCurrentYear = battingCurrentYear.slice(0, displayCount);
 
+			
             // set up bar graph stuff
             var barGraphSVG = d3.select(".barGraphSVG");
             barGraphSVG.selectAll("*").remove();
+			
+			
 
             var margin = { top: 50, right: 50, bottom: 60, left: 70 },
                 width = +barGraphSVG.attr("width") - margin.left - margin.right,
@@ -247,9 +276,221 @@
                 .attr("dy", "0.32em")
                 .text(function (d) { return d; });
         }
+		
+		//
+		
+		
+		
+		        // initialize variables -----------------------------------------------------
+
+        // current selected position
+        var currentPosition = '1B';
+        // current selected statistic. default will be BA (batting average)
+        var currentStat = 'BA';
+        // current selected year. default is 2017
+        var currentYear = '2017';
+        // battingDataFiltered will contain players from AL and NL leagues,
+        // and players with over 400 at bats 
+        var battingDataFiltered;
+        // battingCurrentYear will be battingDataFiltered filtered to contain players
+        // from whatever the currentYear variable is
+        var battingCurrentYear;
+        // peopleDataFiltered will contain players and their general info
+        var peopleDataFiltered;
+        // fieldingDataFiltered will contain players and their fielding data
+        var fieldingDataFiltered;
+		// Number of bars in the graph to display
+		var displayCount = 10;
+		
+        // end of variable declarations ---------------------------------------------
+
+        // function definitions -----------------------------------------------------
+
+        // changeStatistic function called when rank by drop down is changed
+        function changeStatistic(stat) {
+            currentStat = stat;
+            // update bar graph
+            updateBarGraph();
+        }
+
+        // changeYear function called when year drop down is changed
+        function changeYear(year) {
+            currentYear = year;
+            // update bar graph
+            updateBarGraph();
+        }
+
+		// changeYear function called when year drop down is changed
+        function changeDisplayCount(number) {
+            displayCount = number;
+            // update bar graph
+            updateBarGraph();
+        }
+		
+        // changePosition function called when a position is clicked
+        function changePosition(pos) {
+            currentPosition = pos;
+            switch (pos) {
+                case 'OF':
+                    document.getElementById('currentPosText').innerHTML = 'Out Field';
+                break;
+                case '3B':
+                    document.getElementById('currentPosText').innerHTML = 'Third Base';
+                break;
+                case 'SS':
+                    document.getElementById('currentPosText').innerHTML = 'Short Stop'; 
+                break;
+                case '2B':
+                    document.getElementById('currentPosText').innerHTML = 'Second Base';
+                break;
+                case '1B':
+                    document.getElementById('currentPosText').innerHTML = 'First Base';
+                break;
+                case 'P':
+                    document.getElementById('currentPosText').innerHTML = 'Pitcher';
+                break;
+                case 'C':
+                    document.getElementById('currentPosText').innerHTML = 'Catcher';
+                break;
+            }
+            updateBarGraph();
+        }
+
+        // update bar graph with new data
+        function updateBarGraph() {
+            // update data based on year and stat
+            // get all players from currently selected year
+            battingCurrentYear = battingDataFiltered.filter(function(val) {
+                return val.yearID == currentYear;
+            });
+            // get all players from currently selected position
+            battingCurrentYear = battingCurrentYear.filter(function(val1) {
+                var player = fieldingDataFiltered.filter(function(val2) {
+                    return val1.playerID == val2.playerID;
+                });
+                var position = player[0].POS;
+                return position == currentPosition;
+            });
+            // sort by stat
+            battingCurrentYear.sort(function (a, b) { return b[currentStat] - a[currentStat]; });
+            // get top ten players in the category
+            battingCurrentYear = battingCurrentYear.slice(0, displayCount);
+
+			
+            // set up bar graph stuff
+            var barGraphSVG = d3.select(".barGraphSVG");
+            barGraphSVG.selectAll("*").remove();
+
+            var margin = { top: 50, right: 50, bottom: 60, left: 70 },
+                width = +barGraphSVG.attr("width") - margin.left - margin.right,
+                height = +barGraphSVG.attr("height") - margin.top - margin.bottom,
+                g = barGraphSVG.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var x = d3.scaleBand()
+                .rangeRound([0, width])
+                .paddingInner(0.1)
+                .align(0.1);
+
+            var y = d3.scaleLinear()
+                .rangeRound([height, 0]);
+				
+
+				
+            // bar graph stuff
+            var key = [currentStat];
+            x.domain(battingCurrentYear.map(function (d) {
+                // get players full name
+                var player = peopleDataFiltered.filter(function(val) {
+                    return val.playerID == d.playerID;
+                });
+                var first = player[0].nameFirst;
+                var last = player[0].nameLast;
+                d.fullName = first + '\n' + last;
+                return d.fullName;
+            }));
+            y.domain([0, d3.max(battingCurrentYear, function (d) { return d[currentStat]; })]).nice();
+
+			
+			var color = d3.scaleLinear()
+				.domain([d3.min(battingCurrentYear, function (d) { return d[currentStat]; }), d3.max(battingCurrentYear, function (d) { return d[currentStat]; })]).nice()
+				.range(["blue", "red"]);
+			
+            g.append("g")
+                .selectAll("g")
+                .data(d3.stack().keys(key)(battingCurrentYear))
+                .enter().append("g")
+                .selectAll("rect")
+                .data(function (d) { return d; })
+                .enter().append("rect")
+                .attr("fill", function (d) { 
+				return color(d.data[currentStat])
+				})
+                .attr("x", function (d) { return x(d.data.fullName); })
+                .attr("y", function (d) {
+                    // if bar height is less than 5 its basically invisible, just adjusting those tiny bars
+                    var h = y(0) - y(parseFloat(d.data[currentStat]));
+                    if (h < 5) {
+                        h += 3;
+                    }
+                    return height - h;
+                })
+                .attr("height", function (d) {
+                    // if bar height is less than 5 its basically invisible, just adjusting those tiny bars
+                    var h = y(0) - y(parseFloat(d.data[currentStat]));
+                    if (h < 5) {
+                        h += 3;
+                    }
+                    return h;
+                })
+                .attr("width", x.bandwidth());
+
+            g.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+            g.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(y).ticks(null, "s"))
+                .append("text")
+                .attr("x", 2)
+                .attr("y", y(y.ticks().pop()) + 0.5)
+                .attr("dy", "0.32em")
+                .attr("fill", "#000")
+                .attr("font-weight", "bold")
+                .attr("text-anchor", "start")
+
+            var legend = g.append("g")
+                .attr("font-family", "sans-serif")
+                .attr("font-size", 10)
+                .attr("text-anchor", "end")
+                .selectAll("g")
+                .data(key.slice().reverse())
+                .enter().append("g")
+                .attr("transform", function (d, i) {
+                    return "translate(50," + i * 20 + ")";
+                });
+
+            legend.append("rect")
+                .attr("fill", "#134c6d")
+                .attr("x", width - 19)
+                .attr("width", 19)
+                .attr("height", 19)
+
+            legend.append("text")
+                .attr("x", width - 24)
+                .attr("y", 9.5)
+                .attr("dy", "0.32em")
+                .text(function (d) { return d; });
+        }
+		
+		
 
         // end of function definitions ----------------------------------------------
 
+		
+		
+		
         // data loading and formatting ----------------------------------------------
 
         // load people csv
